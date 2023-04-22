@@ -61,8 +61,10 @@ write.csv(spread_data, "true_prop.csv", row.names = FALSE)
 
 # Write simulated bulk counts data to csv 
 bulk_counts <- SummarizedExperiment::assays(simulation$bulk)[["bulk_counts"]]
-write.csv(bulk_counts, "bulk_counts.csv", row.names = FALSE)
+bulk_counts_matrix <- as.matrix(bulk_counts)
+write.csv(bulk_counts_matrix, "bulk_counts.csv", row.names = FALSE)
 
 # Write simultated bulk tpm normalized data to csv
 bulk_tpm <- SummarizedExperiment::assays(simulation$bulk)[["bulk_tpm"]]
-write.csv(bulk_counts, "bulk_tpm.csv", row.names = FALSE)
+bulk_tpm_matrix <- as.matrix(bulk_tpm)
+write.csv(bulk_tpm_matrix, "bulk_tpm.csv", row.names = FALSE)
