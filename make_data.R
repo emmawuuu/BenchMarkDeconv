@@ -1,5 +1,7 @@
 library(SimBu)
 library(dplyr)
+library(tidyr)
+
 
 # Load in single cell data
 sc_data <- readRDS("EMTABsce_healthy.rds")
@@ -37,31 +39,30 @@ ds <- SimBu::dataset(
   annotation = annotation,
   count_matrix = counts(sc_data_filtered),
   tpm_matrix = sc_data_tpm,
-  filter_genes = TRUE,
-  variance_cutoff = 0.1,
-  type_abundance_cutoff = 10
-)
-
-custom_scenario_dataframe <- data.frame(
-  "delta" = c(0.1124, 0.0562, 0.2810, 0.1686, 0.0562, 0.4496, 0.6744, 0.2248, 0.8992, 0.4496),
-  "alpha" = c(0.1739, 0.2319, 0.0579, 0.1158, 0.1739, 0.1158, 0.0579, 0.1739, 0.0579, 0.1158),
-  "gamma" = c(0.0870, 0.1739, 0.2609, 0.1739, 0.1739, 0.0870, 0.1739, 0.0870, 0.0870, 0.2609),
-  "ductal" = c(0.0702, 0.0702, 0.1404, 0.1404, 0.0702, 0.1404, 0.0702, 0.2106, 0.1404, 0.0702),
-  "acinar" = c(0.0413, 0.0826, 0.0413, 0.0826, 0.0413, 0.0413, 0.0413, 0.0826, 0.0413, 0.0826),
-  "beta" = c(0.0385, 0.0385, 0.0385, 0.0385, 0.0385, 0.0385, 0.0385, 0.0385, 0.0385, 0.0385),
-  "PSC" = c(0.0385, 0.0385, 0.0385, 0.0385, 0.0385, 0.0385, 0.0385, 0.0385, 0.0385, 0.0385),
-  "endothelial" = c(0.0385, 0.0385, 0.0385, 0.0385, 0.0385, 0.0385, 0.0385, 0.0385, 0.0385, 0.0385),
-  row.names = paste0("sample", 1:10)
+  filter_genes = TRUE
 )
 
 # Simulate pseudo bulk datasets
 simulation <- SimBu::simulate_bulk(
   data = ds,
-  scenario = "custom",
+  scenario = "random",
   scaling_factor = "NONE",
   ncells = 100,
   nsamples = 10,
   BPPARAM = BiocParallel::MulticoreParam(workers = 4),
   run_parallel = TRUE,
-  custom_scenario_data = custom_scenario_dataframe
 )
+
+plot_object <- SimBu::plot_simulation(simulation = simulation)
+
+# Reformat and write true prop to csv
+spread_data <- spread(data = plot_object$data, key = cell_type, value = fraction, fill = 0)
+write.csv(spread_data, "true_prop.csv", row.names = FALSE)
+
+# Write simulated bulk counts data to csv 
+bulk_counts <- SummarizedExperiment::assays(simulation$bulk)[["bulk_counts"]]
+write.csv(bulk_counts, "bulk_counts.csv", row.names = FALSE)
+
+# Write simultated bulk tpm normalized data to csv
+bulk_tpm <- SummarizedExperiment::assays(simulation$bulk)[["bulk_tpm"]]
+write.csv(bulk_counts, "bulk_tpm.csv", row.names = FALSE)
