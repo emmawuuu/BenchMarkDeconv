@@ -1,5 +1,17 @@
 # BenchMarkDeconv
 
+## Requirements
+
+```
+install.packages("BiocManager")
+install.packages("DWLS")
+BiocManager::install("Biobase")
+BiocManager::install("TOAST")
+BiocManager::install("SingleCellExperiment")
+devtools::install_github("xuranw/MuSiC") 
+devtools::install_github("rosedu1/deconvSeq")
+devtools::install_github("cozygene/bisque")
+```
 ## Dataset 
 [Single cell RNA-seq data of pancreatic islets from healthy individuals (Segerstolpe et al.)](https://xuranw.github.io/MuSiC/data/EMTABsce_healthy.rds)
 

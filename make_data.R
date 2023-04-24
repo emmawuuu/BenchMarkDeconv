@@ -56,16 +56,20 @@ simulation <- SimBu::simulate_bulk(
 SimBu::plot_simulation(simulation = simulation)
 plot_object <- SimBu::plot_simulation(simulation = simulation)
 
-# Reformat and write true prop to csv
+# Reformat and write true prop to csv and rds
 spread_data <- spread(data = plot_object$data, key = cell_type, value = fraction, fill = 0)
 write.csv(spread_data, "true_prop.csv", row.names = TRUE)
+saveRDS(spread_data, "true_prop.rds")
 
-# Write simulated bulk counts data to csv 
+# Write simulated bulk counts data to csv and rds 
 bulk_counts <- SummarizedExperiment::assays(simulation$bulk)[["bulk_counts"]]
 bulk_counts_matrix <- as.matrix(bulk_counts)
 write.csv(bulk_counts_matrix, "bulk_counts.csv", row.names = TRUE)
+saveRDS(bulk_counts, "bulk_counts.rds")
 
-# Write simultated bulk tpm normalized data to csv
+
+# Write simultated bulk tpm normalized data to csv and rds
 bulk_tpm <- SummarizedExperiment::assays(simulation$bulk)[["bulk_tpm"]]
 bulk_tpm_matrix <- as.matrix(bulk_tpm)
 write.csv(bulk_tpm_matrix, "bulk_tpm.csv", row.names = TRUE)
+saveRDS(bulk_tpm, "bulk_tpm.rds")
