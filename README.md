@@ -5,12 +5,16 @@
 ```
 install.packages("BiocManager")
 install.packages("DWLS")
+install.packages("remotes")
+install.packages("reshape2")
 BiocManager::install("Biobase")
 BiocManager::install("TOAST")
 BiocManager::install("SingleCellExperiment")
+BiocManager::install("MAST")
 devtools::install_github("xuranw/MuSiC") 
 devtools::install_github("rosedu1/deconvSeq")
 devtools::install_github("cozygene/bisque")
+remotes::install_github("renozao/xbioc")
 ```
 ## Dataset 
 [Single cell RNA-seq data of pancreatic islets from healthy individuals (Segerstolpe et al.)](https://xuranw.github.io/MuSiC/data/EMTABsce_healthy.rds)
