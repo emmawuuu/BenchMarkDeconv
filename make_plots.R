@@ -1,5 +1,8 @@
 library(SingleCellExperiment)
 library(dplyr)
+library(ggplot2)
+library(reshape2)
+library(tidyr)
 
 # Read in true bulk prop
 true_prop <- readRDS("true_prop.rds")
@@ -64,12 +67,10 @@ SCDC.RMSEs.sub <- sapply(cell_types.sub, function(ct) {
 })
 
 # Plot pearson correlation for scRNA-seq refernece methods
-library(ggplot2)
-library(reshape2)
 
-#####################
-# All 11 cell types #
-#####################
+##########################
+# All 11 cell types RMSE #
+##########################
 df_scRef_rmse <- data.frame(
   celltype = c("acinar","alpha","beta","delta","ductal","endothelial","epsilon","gamma",
                 "mast", "MHC class II", "PSC"),
@@ -91,6 +92,50 @@ ggplot(df_scRef_long_rmse, aes(x = celltype, y = rmse, color = method)) +
        y = "RMSE",
        color = "Method",
        shape = "Method")
+
+#############################
+# All 11 cell types Pearson #
+#############################
+
+df_scRef_pcc <- data.frame(
+  celltype = c("acinar","alpha","beta","delta","ductal","endothelial","epsilon","gamma",
+               "mast", "MHC class II", "PSC"),
+  SCDC = as.numeric(SCDC.correlations),
+  Bisque = as.numeric(BisqueRNA.correlations)
+)
+
+# Reshape the data into a long format
+df_scRef_long_pcc <- reshape2::melt(df_scRef_rmse, id.vars = "celltype", variable.name = "method", value.name = "pcc")
+
+# Calculate mean for each cell type and method
+summary_df <- df_scRef_long_pcc %>%
+  group_by(celltype, method) %>%
+  summarise(mean_pcc = mean(pcc))
+
+# Create a new dataset with pairwise comparisons between cell types
+pairwise_comparison_df <- expand_grid(CellType1 = unique(summary_df$celltype),
+                                      CellType2 = unique(summary_df$celltype),
+                                      method = unique(summary_df$method))
+
+# Calculate the absolute difference between PCC values
+pairwise_comparison_df <- pairwise_comparison_df %>%
+  left_join(summary_df, by = c("CellType1" = "celltype", "method")) %>%
+  rename(PCC1 = mean_pcc) %>%
+  left_join(summary_df, by = c("CellType2" = "celltype", "method")) %>%
+  rename(PCC2 = mean_pcc) %>%
+  mutate(Difference = abs(PCC1 - PCC2))
+
+# Create the heatmap
+plot <- ggplot(pairwise_comparison_df, aes(x = CellType1, y = CellType2, fill = Difference)) +
+  geom_tile() +
+  facet_wrap(~ Method, ncol = 1) +
+  scale_fill_gradient2(low = "white", mid = "blue", high = "darkred", midpoint = median(pairwise_comparison_df$Difference)) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  labs(title = "PCC Difference between Cell Types",
+       x = "Cell Type 1",
+       y = "Cell Type 2",
+       fill = "PCC Difference")
 
 ################
 # 4 cell types #
