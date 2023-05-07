@@ -126,9 +126,9 @@ pairwise_comparison_df <- pairwise_comparison_df %>%
   mutate(Difference = abs(PCC1 - PCC2))
 
 # Create the heatmap
-plot <- ggplot(pairwise_comparison_df, aes(x = CellType1, y = CellType2, fill = Difference)) +
+ggplot(pairwise_comparison_df, aes(x = CellType1, y = CellType2, fill = Difference)) +
   geom_tile() +
-  facet_wrap(~ Method, ncol = 1) +
+  facet_wrap(~ method, ncol = 1) +
   scale_fill_gradient2(low = "white", mid = "blue", high = "darkred", midpoint = median(pairwise_comparison_df$Difference)) +
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
