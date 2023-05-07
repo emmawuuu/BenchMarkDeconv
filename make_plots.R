@@ -167,26 +167,31 @@ ggplot(df_scRef_long_rmse.sub, aes(x = celltype, y = rmse, color = method)) +
 ########################################
 
 # Add OLS
+final_results$stats$ols_sig1$celltype[final_results$stats$ols_sig1$celltype == "MHC.class.II"] <- "MHC class II"
 df_rmse <- df_scRef_long_rmse %>%
   select(celltype, method, rmse) %>%
   rbind(final_results$stats$ols_sig1 %>% select(celltype, method, rmse))
 
 # Add dtangle
+final_results$stats$dtangle_sig1$celltype[final_results$stats$dtangle_sig1$celltype == "MHC.class.II"] <- "MHC class II"
 df_rmse <- df_rmse %>%
   select(celltype, method, rmse) %>%
   rbind(final_results$stats$dtangle_sig1 %>% select(celltype, method, rmse))
 
 # Add nnls
+final_results$stats$nnls_sig1$celltype[final_results$stats$nnls_sig1$celltype == "MHC.class.II"] <- "MHC class II"
 df_rmse <- df_rmse %>%
   select(celltype, method, rmse) %>%
   rbind(final_results$stats$nnls_sig1 %>% select(celltype, method, rmse))
 
 # Add qprog
+final_results$stats$qprog_sig1$celltype[final_results$stats$qprog_sig1$celltype == "MHC.class.II"] <- "MHC class II"
 df_rmse <- df_rmse %>%
   select(celltype, method, rmse) %>%
   rbind(final_results$stats$qprog_sig1 %>% select(celltype, method, rmse))
 
 # Add rls
+final_results$stats$rls_sig1$celltype[final_results$stats$rls_sig1$celltype == "MHC.class.II"] <- "MHC class II"
 df_rmse <- df_rmse %>%
   select(celltype, method, rmse) %>%
   rbind(final_results$stats$rls_sig1 %>% select(celltype, method, rmse))
